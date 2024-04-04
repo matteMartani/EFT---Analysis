@@ -1,27 +1,45 @@
 package org.example
 
 import org.apache.spark.sql._
+import org.apache.spark.sql.functions.desc
+
+import scala.Console.println
 
 object Main {
 
   def main(args: Array[String]): Unit = {
 
+    // Set master to run locally
     val spark = SparkSession.builder()
       .appName("Dataset Visualization")
-      .master("local[*]") // Set master to run locally, you can change it based on your environment
+      .master("local[*]")
       .getOrCreate()
 
     val sc = spark.sparkContext
     sc.setLogLevel("ERROR")
 
     val df = spark.read
-      .format("csv") // Change format based on your dataset
-      .option("header", "true") // If the dataset has a header
-      .load("src\\main\\resources\\ETFs.csv") // Path to your dataset
+      .format("csv")
+      .option("header", "true")
+      .load("src\\main\\resources\\ETFs.csv")
 
+    println("Let's start by analyzing the ETF Table \n")
+    println("Schema:")
     df.printSchema()
 
-    df.show()
+    println("The table itself looks like this: ")
+    df.show(truncate = false)
+
+    println("The total number of rows is: " + df.count())
+
+    println("Now let's dive deep in some features\n")
+    df.groupBy("region").count().show()
+    df.groupBy("currency").count().show()
+    df.groupBy("fund_category").count().orderBy(desc("count")).show(truncate = false)
+    df.groupBy("fund_family").count().orderBy(desc("count")).show(truncate = false)
+    df.groupBy("exchange_name").count().show()
+    df.groupBy("investment_type").count().show()
+    df.groupBy("size_type").count().show()
 
 
     spark.stop()
