@@ -40,7 +40,9 @@ object Main {
     df.groupBy("exchange_name").count().show()
     df.groupBy("investment_type").count().show()
     df.groupBy("size_type").count().show()
-
+    df.groupBy("fund_annual_report_net_expense_ratio").count().show()
+    df.groupBy("asset_stocks").count().orderBy(desc("count")).show()
+    df.orderBy(desc("fund_return_2020")).show()
 
     spark.stop()
   }
