@@ -1,9 +1,6 @@
 package org.example
 
 import org.apache.spark.sql._
-import org.apache.spark.sql.functions.desc
-
-import scala.Console.println
 
 object Main {
 
@@ -23,26 +20,9 @@ object Main {
       .option("header", "true")
       .load("src\\main\\resources\\ETFs.csv")
 
-    println("Let's start by analyzing the ETF Table \n")
-    println("Schema:")
-    df.printSchema()
-
-    println("The table itself looks like this: ")
-    df.show(truncate = false)
-
-    println("The total number of rows is: " + df.count())
-
-    println("Now let's dive deep in some features\n")
-    df.groupBy("region").count().show()
-    df.groupBy("currency").count().show()
-    df.groupBy("fund_category").count().orderBy(desc("count")).show(truncate = false)
-    df.groupBy("fund_family").count().orderBy(desc("count")).show(truncate = false)
-    df.groupBy("exchange_name").count().show()
-    df.groupBy("investment_type").count().show()
-    df.groupBy("size_type").count().show()
-    df.groupBy("fund_annual_report_net_expense_ratio").count().show()
-    df.groupBy("asset_stocks").count().orderBy(desc("count")).show()
-    df.orderBy(desc("fund_return_2020")).show()
+    val explorer = new Explorer(df)
+    explorer.featureExplore()
+    explorer.divideByCategory(threshold = 20)
 
     spark.stop()
   }
